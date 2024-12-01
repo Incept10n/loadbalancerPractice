@@ -28,8 +28,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem server1@188.243.207.170 -p 8887 <<EOF
             # Your server commands go here. Replace these commands with those relevant to your project.
 
-            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker stop $(docker ps -q)
-            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker rm $(docker ps -qa)
+            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker stop $(echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker ps -q)
+            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker rm $(echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker ps -qa)
 
             echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker pull incept1on999/loadbalancertest:1          
             
@@ -59,8 +59,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem server2@188.243.207.170 -p 8886 <<EOF
             # Your server commands go here. Replace these commands with those relevant to your project.
 
-            echo "$SUDO_PASSWORD_SERVER2" | sudo -S docker stop $(docker ps -q)
-            echo "$SUDO_PASSWORD_SERVER2" | sudo -S docker rm $(docker ps -q -a)
+            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker stop $(echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker ps -q)
+            echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker rm $(echo "$SUDO_PASSWORD_SERVER1" | sudo -S docker ps -qa)
 
             echo "$SUDO_PASSWORD_SERVER2" | sudo -S docker pull incept1on999/loadbalancertest:2          
             
