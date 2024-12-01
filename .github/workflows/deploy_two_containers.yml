@@ -26,9 +26,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem server1@188.243.207.170 -p 8887 <<EOF
             # Your server commands go here. Replace these commands with those relevant to your project.
 
-            docker pull incept1on999/loadbalancertest:1          
+            sudo docker pull incept1on999/loadbalancertest:1          
             
-            docker run -d -p 8000:8000 --name server1-container incept1on999/loadbalancertest:1
+            sudo docker run -d -p 8000:8000 --name server1-container incept1on999/loadbalancertest:1
           EOF
 
           rm -f private_key.pem # Remove the private key file after use for security
@@ -47,15 +47,15 @@ jobs:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference the private key stored in GitHub Secrets
         run: |
           echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
-          # chmod 600 private_key.pem # Set the appropriate permissions for the key file
+          chmod 600 private_key.pem # Set the appropriate permissions for the key file
 
           # Establish an SSH connection and execute commands on the remote server
-          ssh -o StrictHostKeyChecking=no -i private_key.pem server1@188.243.207.170 -p 8886 <<EOF
+          ssh -o StrictHostKeyChecking=no -i private_key.pem server2@188.243.207.170 -p 8886 <<EOF
             # Your server commands go here. Replace these commands with those relevant to your project.
 
-            docker pull incept1on999/loadbalancertest:2          
+            sudo docker pull incept1on999/loadbalancertest:2          
             
-            docker run -d -p 9000:9000 --name server2-container incept1on999/loadbalancertest:2
+            sudo docker run -d -p 9000:9000 --name server2-container incept1on999/loadbalancertest:2
           EOF
 
           rm -f private_key.pem # Remove the private key file after use for security
