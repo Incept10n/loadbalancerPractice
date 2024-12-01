@@ -1,0 +1,65 @@
+name: deploy_two_containers 
+
+on:
+  workflow_run:
+    workflows:
+      - build
+    types:
+      - completed
+
+  workflow_dispatch:
+
+jobs:
+  deploy_to_server1:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and run commands
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference the private key stored in GitHub Secrets
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
+          chmod 600 private_key.pem # Set the appropriate permissions for the key file
+
+          # Establish an SSH connection and execute commands on the remote server
+          ssh -o StrictHostKeyChecking=no -i private_key.pem server1@188.243.207.170 -p 8887 <<EOF
+            # Your server commands go here. Replace these commands with those relevant to your project.
+
+            docker pull incept1on999/loadbalancertest:1          
+            
+            docker run -d -p 8000:8000 --name server1-container incept1on999/loadbalancertest:1
+          EOF
+
+          rm -f private_key.pem # Remove the private key file after use for security
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+
+  deploy_to_server2:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and run commands
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference the private key stored in GitHub Secrets
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem # Write the private key to a file
+          chmod 600 private_key.pem # Set the appropriate permissions for the key file
+
+          # Establish an SSH connection and execute commands on the remote server
+          ssh -o StrictHostKeyChecking=no -i private_key.pem server1@188.243.207.170 -p 8886 <<EOF
+            # Your server commands go here. Replace these commands with those relevant to your project.
+
+            docker pull incept1on999/loadbalancertest:2          
+            
+            docker run -d -p 9000:9000 --name server2-container incept1on999/loadbalancertest:2
+          EOF
+
+          rm -f private_key.pem # Remove the private key file after use for security
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
