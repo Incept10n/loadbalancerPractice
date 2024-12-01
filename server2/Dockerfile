@@ -14,4 +14,4 @@ RUN pip install fastapi[standard]
 EXPOSE 9000
 
 # Step 6: Command to run the application
-CMD ["fastapi", "run", "server1.py", "--port", "9000"]
+CMD ["fastapi", "run", "server2.py", "--port", "9000"]
