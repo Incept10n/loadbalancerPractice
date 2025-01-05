@@ -1,0 +1,64 @@
+# this for configuration of load balancer server
+- name: Load balancer config
+  hosts: loadbalancer
+  become: true
+  vars_files: ../vars/vars.yml
+
+  tasks:
+    - name: Check if the apache2 exists and install
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: true
+
+    - name: Enable all mods
+      community.general.apache2_module:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ apache2Modules }}"
+      notify:
+        - Restart apache2
+
+    - name: Copy apache2 load balancer config
+      ansible.builtin.copy:
+        src: ../config/balancerTest.conf
+        dest: /etc/apache2/sites-available/balancerTest.conf
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Check Apache configuration syntax
+      ansible.builtin.command: apache2ctl configtest
+      register: apache2_configtest
+      changed_when: false
+      failed_when: apache2_configtest.rc != 0
+
+    - name: Enable apache2 site
+      ansible.builtin.command: a2ensite balancerTest
+      notify:
+        - Restart apache2
+        - Reload apache2
+        - Reload systemd daemon
+      changed_when: false
+
+    - name: Disable default config
+      ansible.builtin.command: a2dissite 000-default.conf
+      notify:
+        - Restart apache2
+        - Reload apache2
+        - Reload systemd daemon
+      changed_when: false
+
+  handlers:
+    - name: Restart apache2
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
+
+    - name: Reload apache2
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
